@@ -5,7 +5,7 @@ Interactieve digibord-omgeving voor kleuters met drie mini-spelletjes (Kleuren S
 ## Starten met Docker Compose
 
 1. Zorg dat Docker en Docker Compose beschikbaar zijn.
-2. De meegeleverde `.env` bevat veilige standaardwaarden zodat Docker Compose direct start zonder ontbrekende-env waarschuwingen.
+2. De meegeleverde `.env` bevat veilige standaardwaarden, maar is optioneel: zonder `.env` gebruikt Docker Compose automatisch de defaults uit `docker-compose.yml`, zodat je geen ontbrekende-env waarschuwingen krijgt.
 3. De `docker-compose.yml` is standaard al gekoppeld aan deze GitHub-repo (`https://github.com/openai-labs/kids.git#work`). Wil je een fork of andere branch gebruiken, zet dan `REPO_CONTEXT` op de gewenste GitHub-URL en start daarna de compose:
 
    ```bash

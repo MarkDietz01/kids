@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8444:8444"
-    env_file:
-      - .env
     environment:
       - PORT=${PORT:-8444}
       - DB_HOST=${DB_HOST:-mariadb}
