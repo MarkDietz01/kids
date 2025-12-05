@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin • Kleuter Digibord</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <span>KD</span>
+      Admin Overzicht
+    </div>
+    <nav class="nav">
+      <a href="/">Naar activiteiten</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Voortgang van alle kinderen</h1>
+    <p>Voer de beheerderssleutel in om alle data te zien. Kinderen kunnen hun eigen data niet openen zonder hun token.</p>
+    <div class="form-row">
+      <input id="adminKey" placeholder="Admin sleutel" aria-label="Admin sleutel" />
+      <select id="activityFilter">
+        <option value="">Alle activiteiten</option>
+        <option value="Kleuren Splash">Kleuren Splash</option>
+        <option value="Vormen Jacht">Vormen Jacht</option>
+        <option value="Tel Tuin">Tel Tuin</option>
+        <option value="Zoekplaat">Zoekplaat</option>
+      </select>
+      <button class="btn" id="refreshAdmin">Ververs lijst</button>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Laatste rondes</h2>
+      <div class="badge" id="summary">Nog geen gegevens</div>
+      <table class="table" id="progressTable">
+        <thead>
+          <tr>
+            <th>Kind</th>
+            <th>Activiteit</th>
+            <th>Score</th>
+            <th>Details</th>
+            <th>Tijd</th>
+          </tr>
+        </thead>
+        <tbody id="progressBody"></tbody>
+      </table>
+    </article>
+  </section>
+
+  <footer class="footer">
+    Klaar voor de juf of meester • Admin inzicht in één oogopslag
+  </footer>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
