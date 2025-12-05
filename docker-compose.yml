@@ -1,9 +1,10 @@
-x-repo-context: &repo_context ${REPO_CONTEXT:-https://github.com/openai-labs/kids.git#work}
+x-repo-context: &repo_context ${REPO_CONTEXT:-https://codeload.github.com/openai-labs/kids/tar.gz/refs/heads/work}
+x-dockerfile-path: &dockerfile_path ${DOCKERFILE_PATH:-kids-work/Dockerfile}
 services:
   app:
     build:
       context: *repo_context
-      dockerfile: Dockerfile
+      dockerfile: *dockerfile_path
     ports:
       - "8444:8444"
     environment:

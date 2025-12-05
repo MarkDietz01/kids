@@ -6,13 +6,15 @@ Interactieve digibord-omgeving voor kleuters met drie mini-spelletjes (Kleuren S
 
 1. Zorg dat Docker en Docker Compose beschikbaar zijn.
 2. De meegeleverde `.env` bevat veilige standaardwaarden, maar is optioneel: zonder `.env` gebruikt Docker Compose automatisch de defaults uit `docker-compose.yml`, zodat je geen ontbrekende-env waarschuwingen krijgt.
-3. De `docker-compose.yml` is standaard al gekoppeld aan deze GitHub-repo (`https://github.com/openai-labs/kids.git#work`). Wil je een fork of andere branch gebruiken, zet dan `REPO_CONTEXT` op de gewenste GitHub-URL en start daarna de compose:
+3. De `docker-compose.yml` is standaard al gekoppeld aan deze GitHub-repo via een GitHub tarball (`https://codeload.github.com/openai-labs/kids/tar.gz/refs/heads/work`) zodat `git` op de host niet nodig is. Wil je een fork of andere branch gebruiken, zet dan `REPO_CONTEXT` op de gewenste tarball-URL en (optioneel) `DOCKERFILE_PATH` als de mapnaam in het archief verschilt:
 
    ```bash
-   REPO_CONTEXT=https://github.com/jouw-org/kids.git#main docker compose up --build
+   REPO_CONTEXT=https://codeload.github.com/jouw-org/kids/tar.gz/refs/heads/main \
+   DOCKERFILE_PATH=kids-main/Dockerfile \
+   docker compose up --build
    ```
 
-   Laat je `REPO_CONTEXT` leeg, dan wordt automatisch de standaard GitHub-repo van deze app gebruikt.
+   Laat je `REPO_CONTEXT` leeg, dan wordt automatisch de standaard GitHub-repo van deze app gebruikt zonder dat `git` op de host aanwezig hoeft te zijn.
 4. Open <http://localhost:8444> voor de activiteiten en <http://localhost:8444/admin> voor het adminoverzicht.
 
 ## Verbinden met een bestaande MariaDB (bijv. NAS)
@@ -29,6 +31,8 @@ De volgende omgevingsvariabelen kunnen naar wens worden aangepast (zie `docker-c
 - `PORT`: poort waarop de Node-app luistert (standaard 8444)
 - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_DATABASE`, `DB_PORT`: database-parameters voor MariaDB
 - `ADMIN_KEY`: sleutel die in de adminpagina ingevuld moet worden om alle kinderen te bekijken (default `admin123`)
+- `REPO_CONTEXT`: (optioneel) eigen tarball-context voor de Docker-build
+- `DOCKERFILE_PATH`: (optioneel) pad naar de Dockerfile binnen het tarball-archief
 
 ## Database
 
