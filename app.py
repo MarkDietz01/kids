@@ -41,6 +41,17 @@ def init_db():
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_child_token ON child_progress (child_name, child_token)"
     )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS activities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            kind TEXT NOT NULL,
+            data TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
     conn.commit()
     conn.close()
 
@@ -57,6 +68,22 @@ def serialize_row(row):
         "activity": row["activity"],
         "score": row["score"],
         "details": details,
+        "createdAt": row["created_at"],
+    }
+
+
+def serialize_activity(row):
+    body = {}
+    if row["data"]:
+        try:
+            body = json.loads(row["data"])
+        except json.JSONDecodeError:
+            body = {"raw": row["data"]}
+    return {
+        "id": row["id"],
+        "title": row["title"],
+        "kind": row["kind"],
+        "data": body,
         "createdAt": row["created_at"],
     }
 
@@ -104,6 +131,65 @@ def admin_progress():
     ).fetchall()
     conn.close()
     return jsonify([serialize_row(row) for row in rows])
+
+
+@app.get("/api/activities")
+def list_activities():
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT id, title, kind, data, created_at FROM activities ORDER BY created_at DESC"
+    ).fetchall()
+    conn.close()
+    return jsonify([serialize_activity(row) for row in rows])
+
+
+@app.get("/api/activities/<int:activity_id>")
+def get_activity(activity_id: int):
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT id, title, kind, data, created_at FROM activities WHERE id = ?",
+        (activity_id,),
+    ).fetchone()
+    conn.close()
+    if not row:
+        return jsonify({"error": "Activiteit niet gevonden"}), 404
+    return jsonify(serialize_activity(row))
+
+
+@app.post("/api/activities")
+def save_activity():
+    if request.headers.get("x-admin-key") != ADMIN_KEY:
+        return jsonify({"error": "Admin sleutel ongeldig"}), 401
+
+    payload = request.get_json(silent=True) or {}
+    title = (payload.get("title") or "").strip()
+    kind = (payload.get("kind") or "").strip()
+    data = payload.get("data")
+    activity_id = payload.get("id")
+
+    if not title or not kind or not isinstance(data, dict):
+        return jsonify({"error": "title, kind en data zijn verplicht"}), 400
+
+    try:
+        conn = get_connection()
+        if activity_id:
+            conn.execute(
+                "UPDATE activities SET title = ?, kind = ?, data = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (title, kind, json.dumps(data), activity_id),
+            )
+            conn.commit()
+            conn.close()
+            return jsonify({"updated": True, "id": activity_id})
+        cursor = conn.execute(
+            "INSERT INTO activities (title, kind, data) VALUES (?, ?, ?)",
+            (title, kind, json.dumps(data)),
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
+        conn.close()
+        return jsonify({"created": True, "id": new_id})
+    except sqlite3.Error:
+        return jsonify({"error": "Kon activiteit niet opslaan"}), 500
 
 
 @app.get("/api/children/<name>")

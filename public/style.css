@@ -122,6 +122,12 @@ a:hover {
   border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
+.card.light {
+  background: #3e4149;
+  box-shadow: none;
+  border-style: dashed;
+}
+
 .card-head {
   display: flex;
   align-items: center;
@@ -180,6 +186,26 @@ a:hover {
 
 .btn.ghost:hover {
   background: #42454d;
+}
+
+.btn.chip {
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
 }
 
 .progress-bar {

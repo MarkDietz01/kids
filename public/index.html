@@ -113,6 +113,31 @@
           <button class="btn" id="zoekMarkMode">Markeer positie</button>
           <button class="btn ghost" id="zoekReset">Reset zoekplaat</button>
         </div>
+        <div class="card light">
+          <div class="card-head">
+            <div>
+              <h3>Kaarten maken & bewaren</h3>
+              <p>Maak eigen zoekplaten, versleep of verwijder punten en sla ze op voor later gebruik.</p>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="zoekEditMode" />
+              <span>Bewerk-modus</span>
+            </label>
+          </div>
+          <div class="form-row">
+            <input id="zoekCardTitle" placeholder="Naam van de kaart (bijv. Jungle dieren)" />
+            <input id="zoekAdminKey" placeholder="Admin sleutel voor opslaan" />
+          </div>
+          <div class="form-row">
+            <button class="btn" id="zoekSaveCard">Sla kaart op</button>
+            <button class="btn ghost" id="zoekRefreshCards">Ververs kaarten</button>
+          </div>
+          <div class="form-row">
+            <select id="zoekCardSelect"></select>
+            <button class="btn" id="zoekLoadCard">Laad kaart</button>
+          </div>
+          <div class="alert" id="zoekCardStatus">Maak of laad een kaart om op te slaan.</div>
+        </div>
         <canvas id="zoekCanvas" aria-label="Zoekplaat doek"></canvas>
         <div class="alert" id="zoekStatus">Upload eerst een plaat en vul het zoekdoel in.</div>
         <div class="targets" id="zoekTargetsList"></div>

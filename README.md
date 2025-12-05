@@ -23,3 +23,15 @@ Interactieve digibord-omgeving voor kleuters met drie mini-spelletjes (Kleuren S
 
 ## Zoekplaat activiteit
 Upload via de kaart “Zoekplaat” een eigen afbeelding, vul in wat er gezocht moet worden en klik op het doek om het doel te markeren. De gevoeligheid (klikradius) is instelbaar. Als kinderen binnen de radius klikken wordt het gevonden gemarkeerd en weggeschreven naar de database.
+
+### Kaarten ontwerpen en bewaren
+- Zet **Bewerk-modus** aan om punten op de kaart te verslepen of te verwijderen.
+- Vul een kaartnaam en admin-sleutel in en klik **Sla kaart op** om de afbeelding + puntenconfiguratie in SQLite te bewaren.
+- Gebruik de selectielijst om eerder opgeslagen kaarten te laden en opnieuw in fullscreen te gebruiken met de kinderen.
+
+## API
+- `/api/health` — geeft `ok: true` wanneer de SQLite database bereikbaar is.
+- `/api/progress` (POST) — slaat rondes op met `childName`, `childToken`, `activity`, `score`, `details`.
+- `/api/children/:name` (GET) — alleen voor het eigen `x-child-token`, retourneert de rondes van dat kind.
+- `/api/admin/progress` (GET) — adminoverzicht, vereist header `x-admin-key` (default `admin123`).
+- `/api/activities` (GET/POST) — lijst of bewaar zoekplaatkaarten. POST accepteert optioneel `id` (voor updates) en vereist `x-admin-key`.

@@ -178,14 +178,29 @@ const zoekMarkMode = document.getElementById('zoekMarkMode');
 const zoekReset = document.getElementById('zoekReset');
 const zoekStatus = document.getElementById('zoekStatus');
 const zoekTargetsList = document.getElementById('zoekTargetsList');
+const zoekCardTitle = document.getElementById('zoekCardTitle');
+const zoekCardSelect = document.getElementById('zoekCardSelect');
+const zoekSaveCard = document.getElementById('zoekSaveCard');
+const zoekLoadCard = document.getElementById('zoekLoadCard');
+const zoekRefreshCards = document.getElementById('zoekRefreshCards');
+const zoekCardStatus = document.getElementById('zoekCardStatus');
+const zoekEditMode = document.getElementById('zoekEditMode');
+const zoekAdminKey = document.getElementById('zoekAdminKey');
 
 let zoekImage = null;
 let zoekTargets = [];
 let pendingLabel = '';
 let pendingRadius = Number(zoekSensitivity.value);
+let activeCardId = null;
+let activitiesCache = [];
+let draggingTarget = null;
 
 function setZoekStatus(text) {
   zoekStatus.textContent = text;
+}
+
+function setZoekCardStatus(text) {
+  zoekCardStatus.textContent = text;
 }
 
 function drawZoekplaat() {
@@ -223,9 +238,136 @@ function updateTargetsList() {
   zoekTargets.forEach((t, idx) => {
     const row = document.createElement('div');
     row.className = 'target-row';
-    row.textContent = `${idx + 1}. ${t.label} • radius ${t.radius}px • ${t.found ? 'gevonden' : 'nog zoeken'}`;
+    const meta = document.createElement('div');
+    meta.textContent = `${idx + 1}. ${t.label} • radius ${t.radius}px • ${t.found ? 'gevonden' : 'nog zoeken'}`;
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'btn chip ghost';
+    removeBtn.textContent = 'Verwijder punt';
+    removeBtn.addEventListener('click', () => {
+      zoekTargets.splice(idx, 1);
+      updateTargetsList();
+      drawZoekplaat();
+      setZoekStatus('Punt verwijderd.');
+    });
+    actions.appendChild(removeBtn);
+    row.appendChild(meta);
+    row.appendChild(actions);
     zoekTargetsList.appendChild(row);
   });
+}
+
+function findTargetAt(xPx, yPx) {
+  return zoekTargets.find((t) => Math.hypot(xPx - t.x * zoekCanvas.width, yPx - t.y * zoekCanvas.height) <= t.radius);
+}
+
+function renderCardSelect() {
+  zoekCardSelect.innerHTML = '';
+  if (!activitiesCache.length) {
+    const opt = document.createElement('option');
+    opt.textContent = 'Geen opgeslagen kaarten';
+    opt.value = '';
+    zoekCardSelect.appendChild(opt);
+    return;
+  }
+  activitiesCache
+    .filter((a) => a.kind === 'zoekplaat')
+    .forEach((act) => {
+      const opt = document.createElement('option');
+      opt.value = act.id;
+      opt.textContent = `${act.title} (#${act.id})`;
+      zoekCardSelect.appendChild(opt);
+    });
+}
+
+async function refreshActivities() {
+  try {
+    const res = await fetch('/api/activities');
+    activitiesCache = await res.json();
+    renderCardSelect();
+    setZoekCardStatus('Kaartlijst bijgewerkt.');
+  } catch (error) {
+    console.error('Kon activiteiten niet laden', error);
+    setZoekCardStatus('Kon de kaarten niet ophalen. Controleer de server.');
+  }
+}
+
+function hydrateCard(card) {
+  if (!card?.data?.imageData) return;
+  const img = new Image();
+  img.onload = () => {
+    zoekImage = img;
+    zoekTargets = (card.data.targets || []).map((t) => ({ ...t, found: false }));
+    activeCardId = card.id;
+    zoekCardTitle.value = card.title;
+    drawZoekplaat();
+    updateTargetsList();
+    setZoekStatus(`Kaart "${card.title}" geladen. Je kunt nu spelen of bewerken.`);
+  };
+  img.src = card.data.imageData;
+}
+
+function getAdminKey() {
+  return zoekAdminKey.value || localStorage.getItem('kd_admin_key') || '';
+}
+
+async function saveCard() {
+  if (!zoekImage) {
+    setZoekCardStatus('Upload eerst een plaat om op te slaan.');
+    return;
+  }
+  const adminKey = getAdminKey();
+  if (!adminKey) {
+    setZoekCardStatus('Vul je admin sleutel in om op te slaan.');
+    return;
+  }
+  const payload = {
+    id: activeCardId,
+    title: zoekCardTitle.value.trim() || 'Mijn zoekkaart',
+    kind: 'zoekplaat',
+    data: {
+      imageData: zoekImage.src,
+      targets: zoekTargets,
+    },
+  };
+
+  try {
+    const res = await fetch('/api/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminKey,
+      },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 401) {
+      setZoekCardStatus('Admin sleutel ongeldig.');
+      return;
+    }
+    const data = await res.json();
+    activeCardId = data.id;
+    localStorage.setItem('kd_admin_key', adminKey);
+    setZoekCardStatus('Kaart opgeslagen!');
+    refreshActivities();
+  } catch (error) {
+    console.error('Kon kaart niet opslaan', error);
+    setZoekCardStatus('Opslaan mislukt. Probeer opnieuw.');
+  }
+}
+
+function loadSelectedCard() {
+  const id = Number(zoekCardSelect.value);
+  if (!id) {
+    setZoekCardStatus('Geen kaart geselecteerd.');
+    return;
+  }
+  const card = activitiesCache.find((c) => c.id === id);
+  if (!card) {
+    setZoekCardStatus('Kon kaart niet vinden.');
+    return;
+  }
+  hydrateCard(card);
 }
 
 zoekUpload.addEventListener('change', (e) => {
@@ -270,6 +412,7 @@ zoekReset.addEventListener('click', () => {
   zoekCanvas.width = zoekCanvas.height = 0;
   zoekTargetsList.textContent = '';
   setZoekStatus('Upload eerst een plaat en vul het zoekdoel in.');
+  activeCardId = null;
 });
 
 zoekCanvas.addEventListener('click', (e) => {
@@ -283,6 +426,16 @@ zoekCanvas.addEventListener('click', (e) => {
   const yPx = e.clientY - rect.top;
   const xNorm = xPx / zoekCanvas.width;
   const yNorm = yPx / zoekCanvas.height;
+
+  if (zoekEditMode.checked) {
+    const hit = findTargetAt(xPx, yPx);
+    if (hit) {
+      setZoekStatus(`Versleep "${hit.label}" naar de juiste plek.`);
+    } else {
+      setZoekStatus('Klik op een bestaand punt om te verplaatsen.');
+    }
+    return;
+  }
 
   if (pendingLabel) {
     zoekTargets.push({ label: pendingLabel, radius: pendingRadius, x: xNorm, y: yNorm, found: false });
@@ -305,6 +458,51 @@ zoekCanvas.addEventListener('click', (e) => {
     saveProgress('Zoekplaat', 0, { pogingX: xNorm.toFixed(2), pogingY: yNorm.toFixed(2) });
   }
 });
+
+zoekCanvas.addEventListener('mousedown', (e) => {
+  if (!zoekImage || !zoekEditMode.checked) return;
+  const rect = zoekCanvas.getBoundingClientRect();
+  const xPx = e.clientX - rect.left;
+  const yPx = e.clientY - rect.top;
+  draggingTarget = findTargetAt(xPx, yPx) || null;
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!draggingTarget || !zoekEditMode.checked || !zoekImage) return;
+  const rect = zoekCanvas.getBoundingClientRect();
+  const xNorm = (e.clientX - rect.left) / zoekCanvas.width;
+  const yNorm = (e.clientY - rect.top) / zoekCanvas.height;
+  draggingTarget.x = Math.min(1, Math.max(0, xNorm));
+  draggingTarget.y = Math.min(1, Math.max(0, yNorm));
+  drawZoekplaat();
+});
+
+window.addEventListener('mouseup', () => {
+  if (draggingTarget) {
+    setZoekStatus(`Punt "${draggingTarget.label}" verplaatst.`);
+    draggingTarget = null;
+    updateTargetsList();
+  }
+});
+
+zoekEditMode.addEventListener('change', (e) => {
+  if (e.target.checked) {
+    setZoekStatus('Bewerk-modus actief: klik en versleep punten om ze te verplaatsen.');
+  } else {
+    setZoekStatus('Speel-modus: klik op de plaat om te zoeken.');
+  }
+});
+
+zoekSaveCard.addEventListener('click', saveCard);
+zoekLoadCard.addEventListener('click', loadSelectedCard);
+zoekRefreshCards.addEventListener('click', refreshActivities);
+
+const storedAdminKey = localStorage.getItem('kd_admin_key');
+if (storedAdminKey) {
+  zoekAdminKey.value = storedAdminKey;
+}
+
+refreshActivities();
 
 async function loadChildProgress() {
   if (!currentChild) {
