@@ -1,0 +1,32 @@
+x-repo-context: &repo_context ${REPO_CONTEXT:-https://codeload.github.com/openai-labs/kids/tar.gz/refs/heads/work}
+x-dockerfile-path: &dockerfile_path ${DOCKERFILE_PATH:-kids-work/Dockerfile}
+services:
+  app:
+    build:
+      context: *repo_context
+      dockerfile: *dockerfile_path
+    ports:
+      - "8444:8444"
+    environment:
+      - PORT=${PORT:-8444}
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_USER=${DB_USER:-kidcoach}
+      - DB_PASSWORD=${DB_PASSWORD:-kidsecret}
+      - DB_DATABASE=${DB_DATABASE:-kids}
+      - DB_PORT=${DB_PORT:-3306}
+    depends_on:
+      - mariadb
+  mariadb:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      - MARIADB_ROOT_PASSWORD=supersecret
+      - MARIADB_DATABASE=kids
+      - MARIADB_USER=kidcoach
+      - MARIADB_PASSWORD=kidsecret
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+volumes:
+  dbdata:
