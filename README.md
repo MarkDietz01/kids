@@ -5,14 +5,15 @@ Interactieve digibord-omgeving voor kleuters met drie mini-spelletjes (Kleuren S
 ## Starten met Docker Compose
 
 1. Zorg dat Docker en Docker Compose beschikbaar zijn.
-2. De `docker-compose.yml` is standaard al gekoppeld aan deze GitHub-repo (`https://github.com/openai-labs/kids.git#work`). Wil je een fork of andere branch gebruiken, zet dan `REPO_CONTEXT` op de gewenste GitHub-URL en start daarna de compose:
+2. De meegeleverde `.env` bevat veilige standaardwaarden zodat Docker Compose direct start zonder ontbrekende-env waarschuwingen.
+3. De `docker-compose.yml` is standaard al gekoppeld aan deze GitHub-repo (`https://github.com/openai-labs/kids.git#work`). Wil je een fork of andere branch gebruiken, zet dan `REPO_CONTEXT` op de gewenste GitHub-URL en start daarna de compose:
 
    ```bash
    REPO_CONTEXT=https://github.com/jouw-org/kids.git#main docker compose up --build
    ```
 
    Laat je `REPO_CONTEXT` leeg, dan wordt automatisch de standaard GitHub-repo van deze app gebruikt.
-3. Open <http://localhost:8444> voor de activiteiten en <http://localhost:8444/admin> voor het adminoverzicht.
+4. Open <http://localhost:8444> voor de activiteiten en <http://localhost:8444/admin> voor het adminoverzicht.
 
 ## Verbinden met een bestaande MariaDB (bijv. NAS)
 

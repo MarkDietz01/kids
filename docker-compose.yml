@@ -1,6 +1,4 @@
 x-repo-context: &repo_context ${REPO_CONTEXT:-https://github.com/openai-labs/kids.git#work}
-
-version: '3.9'
 services:
   app:
     build:
@@ -11,12 +9,12 @@ services:
     env_file:
       - .env
     environment:
-      - PORT=8444
-      - DB_HOST=mariadb
-      - DB_USER=kidcoach
-      - DB_PASSWORD=kidsecret
-      - DB_DATABASE=kids
-      - DB_PORT=3306
+      - PORT=${PORT:-8444}
+      - DB_HOST=${DB_HOST:-mariadb}
+      - DB_USER=${DB_USER:-kidcoach}
+      - DB_PASSWORD=${DB_PASSWORD:-kidsecret}
+      - DB_DATABASE=${DB_DATABASE:-kids}
+      - DB_PORT=${DB_PORT:-3306}
     depends_on:
       - mariadb
   mariadb:
