@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 8444;
 
 const dbConfig = {
-  host: process.env.DB_HOST || 'mariadb',
+  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'kidcoach',
   password: process.env.DB_PASSWORD || 'kidsecret',
   database: process.env.DB_DATABASE || 'kids',
