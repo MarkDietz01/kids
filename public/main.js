@@ -186,6 +186,8 @@ const zoekRefreshCards = document.getElementById('zoekRefreshCards');
 const zoekCardStatus = document.getElementById('zoekCardStatus');
 const zoekEditMode = document.getElementById('zoekEditMode');
 const zoekAdminKey = document.getElementById('zoekAdminKey');
+const zoekAdminToggle = document.getElementById('zoekAdminToggle');
+const zoekAdminNotice = document.getElementById('zoekAdminNotice');
 
 let zoekImage = null;
 let zoekTargets = [];
@@ -194,6 +196,7 @@ let pendingRadius = Number(zoekSensitivity.value);
 let activeCardId = null;
 let activitiesCache = [];
 let draggingTarget = null;
+let zoekAdminVisible = false;
 
 function setZoekStatus(text) {
   zoekStatus.textContent = text;
@@ -213,6 +216,8 @@ function drawZoekplaat() {
   zoekCtx.drawImage(zoekImage, 0, 0, zoekCanvas.width, zoekCanvas.height);
 
   zoekTargets.forEach((target) => {
+    const showTag = zoekAdminVisible || zoekEditMode.checked;
+    if (!showTag && !target.found) return;
     const x = target.x * zoekCanvas.width;
     const y = target.y * zoekCanvas.height;
     zoekCtx.beginPath();
@@ -220,18 +225,25 @@ function drawZoekplaat() {
     zoekCtx.strokeStyle = target.found ? '#3ba55c' : '#f0b232';
     zoekCtx.lineWidth = 3;
     zoekCtx.stroke();
-    zoekCtx.fillStyle = 'rgba(0,0,0,0.5)';
-    zoekCtx.fillRect(x - 50, y - 14, 100, 24);
-    zoekCtx.fillStyle = '#fff';
-    zoekCtx.font = 'bold 14px Nunito, sans-serif';
-    zoekCtx.textAlign = 'center';
-    zoekCtx.fillText(target.label, x, y + 4);
+    if (showTag) {
+      zoekCtx.fillStyle = 'rgba(0,0,0,0.5)';
+      zoekCtx.fillRect(x - 50, y - 14, 100, 24);
+      zoekCtx.fillStyle = '#fff';
+      zoekCtx.font = 'bold 14px Nunito, sans-serif';
+      zoekCtx.textAlign = 'center';
+      zoekCtx.fillText(target.label, x, y + 4);
+    }
   });
 }
 
 function updateTargetsList() {
+  const showTagList = zoekAdminVisible || zoekEditMode.checked;
   if (!zoekTargets.length) {
-    zoekTargetsList.textContent = 'Nog geen zoekdoelen toegevoegd.';
+    zoekTargetsList.textContent = showTagList ? 'Nog geen zoekdoelen toegevoegd.' : 'Tags zijn verborgen voor kinderen.';
+    return;
+  }
+  if (!showTagList) {
+    zoekTargetsList.textContent = 'Tags zijn verborgen. Schakel Admin-tags in om ze te bekijken.';
     return;
   }
   zoekTargetsList.innerHTML = '';
@@ -310,6 +322,14 @@ function hydrateCard(card) {
 
 function getAdminKey() {
   return zoekAdminKey.value || localStorage.getItem('kd_admin_key') || '';
+}
+
+function setAdminVisibility(on) {
+  zoekAdminVisible = on;
+  zoekAdminToggle.textContent = on ? 'Verberg admin-tags' : 'Toon admin-tags';
+  zoekAdminNotice.textContent = on ? 'Admin-tags zichtbaar (alleen voor beheerders).' : 'Tags zijn verborgen voor kinderen.';
+  updateTargetsList();
+  drawZoekplaat();
 }
 
 async function saveCard() {
@@ -491,16 +511,31 @@ zoekEditMode.addEventListener('change', (e) => {
   } else {
     setZoekStatus('Speel-modus: klik op de plaat om te zoeken.');
   }
+  drawZoekplaat();
+  updateTargetsList();
 });
 
 zoekSaveCard.addEventListener('click', saveCard);
 zoekLoadCard.addEventListener('click', loadSelectedCard);
 zoekRefreshCards.addEventListener('click', refreshActivities);
 
+zoekAdminToggle.addEventListener('click', () => {
+  const adminKey = getAdminKey();
+  if (!adminKey) {
+    setZoekStatus('Vul de admin sleutel in om de tags zichtbaar te maken.');
+    return;
+  }
+  localStorage.setItem('kd_admin_key', adminKey);
+  setAdminVisibility(!zoekAdminVisible);
+  setZoekStatus(zoekAdminVisible ? 'Admin-tags zichtbaar.' : 'Admin-tags verborgen.');
+});
+
 const storedAdminKey = localStorage.getItem('kd_admin_key');
 if (storedAdminKey) {
   zoekAdminKey.value = storedAdminKey;
 }
+
+setAdminVisibility(false);
 
 refreshActivities();
 
@@ -561,6 +596,10 @@ document.querySelectorAll('[data-fullscreen-target]').forEach((btn) => {
       el.requestFullscreen();
     }
   });
+});
+
+['resize', 'fullscreenchange'].forEach((evt) => {
+  window.addEventListener(evt, drawZoekplaat);
 });
 
 loadIdentity();

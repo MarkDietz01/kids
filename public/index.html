@@ -100,47 +100,55 @@
       </div>
 
       <div class="activity-stage tall">
-        <div class="form-row">
-          <input type="file" id="zoekplaatUpload" accept="image/*" />
-          <input id="zoekItemName" placeholder="Wat moeten ze zoeken?" aria-label="Naam van zoekdoel" />
-        </div>
-        <div class="form-row">
-          <label class="slider-label" for="zoekSensitivity">Klik-gevoeligheid</label>
-          <input type="range" min="20" max="140" step="5" value="60" id="zoekSensitivity" />
-          <div class="badge" id="zoekSensitivityLabel">Radius: 60px</div>
-        </div>
-        <div class="form-row">
-          <button class="btn" id="zoekMarkMode">Markeer positie</button>
-          <button class="btn ghost" id="zoekReset">Reset zoekplaat</button>
-        </div>
-        <div class="card light">
-          <div class="card-head">
-            <div>
-              <h3>Kaarten maken & bewaren</h3>
-              <p>Maak eigen zoekplaten, versleep of verwijder punten en sla ze op voor later gebruik.</p>
+        <div class="zoek-controls">
+          <div class="form-row">
+            <input type="file" id="zoekplaatUpload" accept="image/*" />
+            <input id="zoekItemName" placeholder="Wat moeten ze zoeken?" aria-label="Naam van zoekdoel" />
+          </div>
+          <div class="form-row">
+            <label class="slider-label" for="zoekSensitivity">Klik-gevoeligheid</label>
+            <input type="range" min="20" max="140" step="5" value="60" id="zoekSensitivity" />
+            <div class="badge" id="zoekSensitivityLabel">Radius: 60px</div>
+          </div>
+          <div class="form-row">
+            <button class="btn" id="zoekMarkMode">Markeer positie</button>
+            <button class="btn ghost" id="zoekReset">Reset zoekplaat</button>
+          </div>
+          <div class="card light">
+            <div class="card-head">
+              <div>
+                <h3>Kaarten maken & bewaren</h3>
+                <p>Maak eigen zoekplaten, versleep of verwijder punten en sla ze op voor later gebruik.</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="zoekEditMode" />
+                <span>Bewerk-modus</span>
+              </label>
             </div>
-            <label class="toggle">
-              <input type="checkbox" id="zoekEditMode" />
-              <span>Bewerk-modus</span>
-            </label>
+            <div class="form-row">
+              <input id="zoekCardTitle" placeholder="Naam van de kaart (bijv. Jungle dieren)" />
+              <input id="zoekAdminKey" placeholder="Admin sleutel voor opslaan" />
+            </div>
+            <div class="form-row">
+              <button class="btn" id="zoekSaveCard">Sla kaart op</button>
+              <button class="btn ghost" id="zoekRefreshCards">Ververs kaarten</button>
+            </div>
+            <div class="form-row">
+              <select id="zoekCardSelect"></select>
+              <button class="btn" id="zoekLoadCard">Laad kaart</button>
+            </div>
+            <div class="form-row">
+              <button class="btn ghost" id="zoekAdminToggle">Toon admin-tags</button>
+              <div class="badge subtle" id="zoekAdminNotice">Tags zijn verborgen voor kinderen.</div>
+            </div>
+            <div class="alert" id="zoekCardStatus">Maak of laad een kaart om op te slaan.</div>
           </div>
-          <div class="form-row">
-            <input id="zoekCardTitle" placeholder="Naam van de kaart (bijv. Jungle dieren)" />
-            <input id="zoekAdminKey" placeholder="Admin sleutel voor opslaan" />
-          </div>
-          <div class="form-row">
-            <button class="btn" id="zoekSaveCard">Sla kaart op</button>
-            <button class="btn ghost" id="zoekRefreshCards">Ververs kaarten</button>
-          </div>
-          <div class="form-row">
-            <select id="zoekCardSelect"></select>
-            <button class="btn" id="zoekLoadCard">Laad kaart</button>
-          </div>
-          <div class="alert" id="zoekCardStatus">Maak of laad een kaart om op te slaan.</div>
+          <div class="alert" id="zoekStatus">Upload eerst een plaat en vul het zoekdoel in.</div>
+          <div class="targets" id="zoekTargetsList"></div>
         </div>
-        <canvas id="zoekCanvas" aria-label="Zoekplaat doek"></canvas>
-        <div class="alert" id="zoekStatus">Upload eerst een plaat en vul het zoekdoel in.</div>
-        <div class="targets" id="zoekTargetsList"></div>
+        <div class="canvas-shell">
+          <canvas id="zoekCanvas" aria-label="Zoekplaat doek"></canvas>
+        </div>
       </div>
     </article>
 

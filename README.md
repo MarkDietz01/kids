@@ -19,10 +19,14 @@ Interactieve digibord-omgeving voor kleuters met drie mini-spelletjes (Kleuren S
 
 ## Privacy en fullscreen
 - Elke sessie gebruikt een kind-token (`child_token`) zodat kinderen alleen hun eigen resultaten kunnen zien; de adminpagina vraagt altijd om de `ADMIN_KEY`.
-- Activiteiten renderen in fullscreen-stijl zodat ze makkelijk zichtbaar zijn op het digibord.
+- Activiteiten renderen in fullscreen-stijl zodat ze makkelijk zichtbaar zijn op het digibord. De zoekplaat verbergt alle bediening en tags tijdens fullscreen, zodat alleen de plaat zichtbaar is voor de kinderen.
+- Tags/markeringen op de zoekplaat zijn standaard verborgen; activeer **Admin-tags** met de admin-sleutel om de posities en labels te tonen voor leerkrachten.
 
 ## Zoekplaat activiteit
 Upload via de kaart “Zoekplaat” een eigen afbeelding, vul in wat er gezocht moet worden en klik op het doek om het doel te markeren. De gevoeligheid (klikradius) is instelbaar. Als kinderen binnen de radius klikken wordt het gevonden gemarkeerd en weggeschreven naar de database.
+
+- Klik **Admin-tags** en vul de admin-sleutel in als je als leerkracht alle tags wilt zien, labels controleren of op het digibord wilt uitleggen wat er gezocht moet worden.
+- In fullscreen toont de zoekplaat alleen het doek; schakel Admin-tags in voordat je fullscreen gaat als je de markeringen zelf wilt bekijken.
 
 ### Kaarten ontwerpen en bewaren
 - Zet **Bewerk-modus** aan om punten op de kaart te verslepen of te verwijderen.
