@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kleuter Digibord</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <span>KD</span>
+      Kleuter Digibord
+    </div>
+    <nav class="nav">
+      <a href="#activiteiten">Activiteiten</a>
+      <a href="#kind">Kind</a>
+      <a href="/admin">Admin</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Speel, ontdek en leer in Discord-stijl</h1>
+    <p>Drie speelse activiteiten in fullscreen-modus én een uploadbare zoekplaat. Elke leerling heeft een eigen geheime token zodat anderen hun data niet kunnen zien.</p>
+    <div class="form-row" id="kind">
+      <input id="childName" placeholder="Naam van het kind" aria-label="Naam van het kind" />
+      <button class="btn" id="saveName">Bewaar naam</button>
+      <div class="badge" id="savedName">Geen naam opgeslagen</div>
+    </div>
+  </section>
+
+  <section class="grid" id="activiteiten">
+    <article class="card" id="colorSplash">
+      <div class="badge">Kleurherkenning • Creatief</div>
+      <div class="card-head">
+        <div>
+          <h2>Kleuren Splash</h2>
+          <p>Luister naar de vraag en tik op de kleur die past. Perfect voor kleurherkenning.</p>
+        </div>
+        <button class="btn ghost" data-fullscreen-target="colorSplash">Fullscreen</button>
+      </div>
+      <div class="activity-stage">
+        <div id="colorPrompt">Klik op start om te beginnen!</div>
+        <div class="actions">
+          <button class="btn" id="colorStart">Start ronde</button>
+        </div>
+        <div class="quiz-options" id="colorOptions"></div>
+        <div class="feedback" id="colorFeedback"></div>
+      </div>
+    </article>
+
+    <article class="card" id="shapeHunt">
+      <div class="badge">Vormen • Ruimtelijk inzicht</div>
+      <div class="card-head">
+        <div>
+          <h2>Vormen Jacht</h2>
+          <p>Kies de vorm die bij de schaduw past. Helpt bij vormherkenning.</p>
+        </div>
+        <button class="btn ghost" data-fullscreen-target="shapeHunt">Fullscreen</button>
+      </div>
+      <div class="activity-stage">
+        <div id="shapePrompt">Klik op start om te beginnen!</div>
+        <div class="actions">
+          <button class="btn" id="shapeStart">Start ronde</button>
+        </div>
+        <div class="quiz-options" id="shapeOptions"></div>
+        <div class="feedback" id="shapeFeedback"></div>
+      </div>
+    </article>
+
+    <article class="card" id="countGarden">
+      <div class="badge">Tellen • Logisch denken</div>
+      <div class="card-head">
+        <div>
+          <h2>Tel Tuin</h2>
+          <p>Tel het aantal bloemen dat je ziet en kies het juiste getal.</p>
+        </div>
+        <button class="btn ghost" data-fullscreen-target="countGarden">Fullscreen</button>
+      </div>
+      <div class="activity-stage">
+        <div id="countPrompt">Klik op start om te beginnen!</div>
+        <div class="actions">
+          <button class="btn" id="countStart">Start ronde</button>
+        </div>
+        <div class="quiz-options" id="countOptions"></div>
+        <div class="feedback" id="countFeedback"></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid">
+    <article class="card" id="zoekplaat">
+      <div class="badge">Zoekplaat • Upload zelf • Privacy-safe</div>
+      <div class="card-head">
+        <div>
+          <h2>Zoekplaat</h2>
+          <p>Upload een zoekplaat, markeer wat de kinderen moeten zoeken en kies hoe precies geklikt moet worden.</p>
+        </div>
+        <button class="btn ghost" data-fullscreen-target="zoekplaat">Fullscreen</button>
+      </div>
+
+      <div class="activity-stage tall">
+        <div class="zoek-controls">
+          <div class="form-row">
+            <input type="file" id="zoekplaatUpload" accept="image/*" />
+            <input id="zoekItemName" placeholder="Wat moeten ze zoeken?" aria-label="Naam van zoekdoel" />
+          </div>
+          <div class="form-row">
+            <label class="slider-label" for="zoekSensitivity">Klik-gevoeligheid</label>
+            <input type="range" min="20" max="140" step="5" value="60" id="zoekSensitivity" />
+            <div class="badge" id="zoekSensitivityLabel">Radius: 60px</div>
+          </div>
+          <div class="form-row">
+            <button class="btn" id="zoekMarkMode">Markeer positie</button>
+            <button class="btn ghost" id="zoekReset">Reset zoekplaat</button>
+          </div>
+          <div class="card light">
+            <div class="card-head">
+              <div>
+                <h3>Kaarten maken & bewaren</h3>
+                <p>Maak eigen zoekplaten, versleep of verwijder punten en sla ze op voor later gebruik.</p>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" id="zoekEditMode" />
+                <span>Bewerk-modus</span>
+              </label>
+            </div>
+            <div class="form-row">
+              <input id="zoekCardTitle" placeholder="Naam van de kaart (bijv. Jungle dieren)" />
+              <input id="zoekAdminKey" placeholder="Admin sleutel voor opslaan" />
+            </div>
+            <div class="form-row">
+              <button class="btn" id="zoekSaveCard">Sla kaart op</button>
+              <button class="btn ghost" id="zoekRefreshCards">Ververs kaarten</button>
+            </div>
+            <div class="form-row">
+              <select id="zoekCardSelect"></select>
+              <button class="btn" id="zoekLoadCard">Laad kaart</button>
+            </div>
+            <div class="form-row">
+              <button class="btn ghost" id="zoekAdminToggle">Toon admin-tags</button>
+              <div class="badge subtle" id="zoekAdminNotice">Tags zijn verborgen voor kinderen.</div>
+            </div>
+            <div class="alert" id="zoekCardStatus">Maak of laad een kaart om op te slaan.</div>
+          </div>
+          <div class="alert" id="zoekStatus">Upload eerst een plaat en vul het zoekdoel in.</div>
+          <div class="targets" id="zoekTargetsList"></div>
+        </div>
+        <div class="canvas-shell">
+          <canvas id="zoekCanvas" aria-label="Zoekplaat doek"></canvas>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <h2>Kind voortgang</h2>
+      <p>Bekijk de opgeslagen rondes per activiteit voor het gekozen kind.</p>
+      <div class="form-row">
+        <button class="btn ghost" id="refreshChild">Toon laatste rondes</button>
+      </div>
+      <div class="alert" id="childProgress">Geen data geladen.</div>
+    </article>
+  </section>
+
+  <footer class="footer">
+    Gemaakt voor kleuters • Donkere Discord-look voor een rustig bord
+  </footer>
+
+  <script src="/main.js"></script>
+</body>
+</html>
